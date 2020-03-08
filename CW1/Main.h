@@ -24,8 +24,6 @@ template <int v> struct LIT { INLINE_RET( return v; ) };
 // Static evaluation 
 //
 //
-//
-//
 
 // Loop for exponent expansion
 
@@ -82,6 +80,56 @@ struct EVAL<d, VAR> {
 template <int d, int V>
 struct EVAL<d, LIT<V> > {
    enum {RET = V};
+};
+
+
+// Question 2
+// Inline integrals
+//
+
+template <class V>
+struct RECTANGLE {
+   static inline double body(double lower, double upper){
+      return (upper - lower) * V::eval((upper + lower) / 2);
+   }
+};
+
+template <class V>
+struct TRAPEZOID {
+   static inline double body(double lower, double upper){
+      return (upper-lower) * ((V::eval(upper) + V::eval(lower)) / 2);
+   }
+};
+
+template <int n, class B>
+struct UNROLL { 
+   static inline double eval(double start, double offset){
+      return B::body(start + (offset * (n-1)), start + (offset * n)) + UNROLL<n-1,  B>::eval(start, offset);
+   }; 
+};
+
+template <class B>
+struct UNROLL<0, B> {
+   static inline double eval(double lower, double upper) {
+      return 0; 
+   };
+};
+
+template <int n ,class V>
+struct INTEGRAL {};
+
+template <int n, class V> 
+struct INTEGRAL<n, RECTANGLE<V> > {  
+   static inline double integrate(double lower, double upper){
+      return UNROLL<n, RECTANGLE<V> >::eval(lower,((upper - lower) / 5));
+   };
+};
+
+template <int n, class V>
+struct INTEGRAL<n, TRAPEZOID<V> > {
+   static inline double integrate(double lower, double upper){
+      return UNROLL<n, TRAPEZOID<V> >::eval(lower,((upper - lower) / 5));
+   };
 };
 
 #endif

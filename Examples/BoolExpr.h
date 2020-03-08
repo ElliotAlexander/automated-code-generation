@@ -66,7 +66,7 @@ template <bool b, class F>
 struct EVAL;
 
 template <bool b>
-struct EVAL <b, VAR> {
+struct EVAL <b, VAR> {;
     enum {RET = b};
 };
 

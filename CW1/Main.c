@@ -24,5 +24,11 @@ int main(int argc, const char * argv[]){
    double x = EVAL<2, FORMULA7>::RET;
    printf("Result 2 is %f\n", x);
 
+   // INtegral testing
+   //
+   //
+   typedef SUBTRACT<ADDITION<EXPONENT<VAR, LIT<2> >, PAREN<MULTIPLY<LIT<2>, VAR> > >, LIT<3> > POLY1;
+   printf("Result is %f\n", INTEGRAL<5, RECTANGLE<POLY1> >::integrate(0, 5));
+   printf("Result is %f\n", INTEGRAL<5, TRAPEZOID<POLY1> >::integrate(0,5));
    return 0;
 }
