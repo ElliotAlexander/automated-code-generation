@@ -5,60 +5,63 @@
 #include <math.h>
 
 
+
+// Question 1 + 3
+//
 // Dynamic evaluation
 #define INLINE_RET(BODY) \
    static inline double eval(double d){ \
-      BODY \
+      return BODY \
    };
 
 #define INLINE_DERIV(BODY) \
    static inline double derivative(double d){ \
-      BODY \
+      return BODY \
    };
 
 #define LR_TEMP template <class L, class R> struct 
-template <class EXP> struct PAREN { INLINE_RET( return EXP::eval(d); )};
+template <class EXP> struct PAREN { INLINE_RET( EXP::eval(d); )};
 LR_TEMP EXPONENT { 
-   INLINE_RET( return pow(L::eval(d), R::eval(d)); )
-   INLINE_DERIV ( return R::eval(d) * pow(L::eval(d), R::eval(d) - 1) * L::derivative(d); )
+   INLINE_RET( pow(L::eval(d), R::eval(d)); )
+   INLINE_DERIV ( R::eval(d) * pow(L::eval(d), R::eval(d) - 1) * L::derivative(d); )
 };
 
 LR_TEMP MULTIPLY { 
-   INLINE_RET( return L::eval(d) * R::eval(d); )
-   INLINE_DERIV( return (L::eval(d) * R::derivative(d)) + (L::derivative(d) * R::eval(d) ); )
+   INLINE_RET( L::eval(d) * R::eval(d); )
+   INLINE_DERIV( (L::eval(d) * R::derivative(d)) + (L::derivative(d) * R::eval(d) ); )
 };
 LR_TEMP DIVIDE   { 
-   INLINE_RET( return L::eval(d) / R::eval(d); )
-   INLINE_DERIV( return (R::eval(d) + L::derivative(d) - L::eval(d) * R::derivative(d)) / pow(R::eval(d),2); )
+   INLINE_RET( L::eval(d) / R::eval(d); )
+   INLINE_DERIV( (R::eval(d) + L::derivative(d) - L::eval(d) * R::derivative(d)) / pow(R::eval(d),2); )
 };
 
 LR_TEMP ADDITION { 
-   INLINE_RET( return L::eval(d) + R::eval(d); )
-   INLINE_DERIV( return L::derivative(d) + R::derivative(d); )
+   INLINE_RET( L::eval(d) + R::eval(d); )
+   INLINE_DERIV( L::derivative(d) + R::derivative(d); )
 };
 
 LR_TEMP SUBTRACT { 
-   INLINE_RET( return L::eval(d) - R::eval(d); )
-   INLINE_DERIV( return L::derivative(d) - R::derivative(d); )
+   INLINE_RET( L::eval(d) - R::eval(d); )
+   INLINE_DERIV( L::derivative(d) - R::derivative(d); )
 };
 
 struct VAR  { 
-   INLINE_RET( return d; )
-   INLINE_DERIV( return 1; )
+   INLINE_RET( d; )
+   INLINE_DERIV( 1; )
 };
 
 template <int v> struct LIT { 
-   INLINE_RET( return v; ) 
-   INLINE_DERIV( return 0; )
+   INLINE_RET( v; ) 
+   INLINE_DERIV( 0; )
 };
 
-
+// Question 1 
 // Static evaluation 
 //
 //
 
 // Loop for exponent expansion
-
+// Added this static method as an example of static loop unrolling
 template <int exp, int count> struct EXPONENT_UNROLL{
    enum { RET = exp * EXPONENT_UNROLL<exp, (count-1)>::RET};
 };
@@ -163,10 +166,5 @@ struct INTEGRAL<n, TRAPEZOID<V> > {
       return UNROLL<n, TRAPEZOID<V> >::eval(lower,((upper - lower) / n));
    };
 };
-
-
-// Question 3
-//
-//
 
 #endif
