@@ -24,11 +24,16 @@ int main(int argc, const char * argv[]){
    double x = EVAL<2, FORMULA7>::RET;
    printf("Result 2 is %f\n", x);
 
-   // INtegral testing
-   //
+   // Integral
    //
    typedef SUBTRACT<ADDITION<EXPONENT<VAR, LIT<2> >, PAREN<MULTIPLY<LIT<2>, VAR> > >, LIT<3> > POLY1;
-   printf("Result is %f\n", INTEGRAL<5, RECTANGLE<POLY1> >::integrate(0, 5));
-   printf("Result is %f\n", INTEGRAL<5, TRAPEZOID<POLY1> >::integrate(0,5));
+   printf("Rectangle approximation Result is %f\n", INTEGRAL<100, RECTANGLE<POLY1> >::integrate(0, 10));
+   printf("Trapezoid approxmination Result is %f\n", INTEGRAL<100, TRAPEZOID<POLY1> >::integrate(0,10));
+
+
+   // derivatives
+   //
+   typedef DIVIDE<PAREN<EXPONENT<VAR, PAREN<ADDITION<LIT<20>, LIT<3> > > > >, PAREN<SUBTRACT<VAR, LIT<3> > > > FORMULA8;
+   printf("Derivative result is: %f\n", FORMULA8::eval(5));
    return 0;
 }

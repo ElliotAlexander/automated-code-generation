@@ -10,15 +10,47 @@
    static inline double eval(double d){ \
       BODY \
    };
+
+#define INLINE_DERIV(BODY) \
+   static inline double derivative(double d){ \
+      BODY \
+   };
+
 #define LR_TEMP template <class L, class R> struct 
 template <class EXP> struct PAREN { INLINE_RET( return EXP::eval(d); )};
-LR_TEMP EXPONENT { INLINE_RET( return pow(L::eval(d), R::eval(d)); )};
-LR_TEMP MULTIPLY { INLINE_RET( return L::eval(d) * R::eval(d); )};
-LR_TEMP DIVIDE   { INLINE_RET( return L::eval(d) / R::eval(d); )};
-LR_TEMP ADDITION { INLINE_RET( return L::eval(d) + R::eval(d); )};
-LR_TEMP SUBTRACT { INLINE_RET( return L::eval(d) - R::eval(d); )};
-struct VAR  { INLINE_RET( return d; )};
-template <int v> struct LIT { INLINE_RET( return v; ) };
+LR_TEMP EXPONENT { 
+   INLINE_RET( return pow(L::eval(d), R::eval(d)); )
+   INLINE_DERIV ( return R::eval(d) * pow(L::eval(d), R::eval(d) - 1) * L::derivative(d); )
+};
+
+LR_TEMP MULTIPLY { 
+   INLINE_RET( return L::eval(d) * R::eval(d); )
+   INLINE_DERIV( return (L::eval(d) * R::derivative(d)) + (L::derivative(d) * R::eval(d) ); )
+};
+LR_TEMP DIVIDE   { 
+   INLINE_RET( return L::eval(d) / R::eval(d); )
+   INLINE_DERIV( return (R::eval(d) + L::derivative(d) - L::eval(d) * R::derivative(d)) / pow(R::eval(d),2); )
+};
+
+LR_TEMP ADDITION { 
+   INLINE_RET( return L::eval(d) + R::eval(d); )
+   INLINE_DERIV( return L::derivative(d) + R::derivative(d); )
+};
+
+LR_TEMP SUBTRACT { 
+   INLINE_RET( return L::eval(d) - R::eval(d); )
+   INLINE_DERIV( return L::derivative(d) - R::derivative(d); )
+};
+
+struct VAR  { 
+   INLINE_RET( return d; )
+   INLINE_DERIV( return 1; )
+};
+
+template <int v> struct LIT { 
+   INLINE_RET( return v; ) 
+   INLINE_DERIV( return 0; )
+};
 
 
 // Static evaluation 
@@ -83,7 +115,7 @@ struct EVAL<d, LIT<V> > {
 };
 
 
-// Question 2
+ // Question 2
 // Inline integrals
 //
 
@@ -121,15 +153,20 @@ struct INTEGRAL {};
 template <int n, class V> 
 struct INTEGRAL<n, RECTANGLE<V> > {  
    static inline double integrate(double lower, double upper){
-      return UNROLL<n, RECTANGLE<V> >::eval(lower,((upper - lower) / 5));
+      return UNROLL<n, RECTANGLE<V> >::eval(lower,((upper - lower) / n));
    };
 };
 
 template <int n, class V>
 struct INTEGRAL<n, TRAPEZOID<V> > {
    static inline double integrate(double lower, double upper){
-      return UNROLL<n, TRAPEZOID<V> >::eval(lower,((upper - lower) / 5));
+      return UNROLL<n, TRAPEZOID<V> >::eval(lower,((upper - lower) / n));
    };
 };
+
+
+// Question 3
+//
+//
 
 #endif
