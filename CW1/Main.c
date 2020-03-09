@@ -16,24 +16,28 @@ int main(int argc, const char * argv[]){
    typedef EXPONENT<VAR, VAR> FORMULA6;
 
 
+   // Question 1
+   //
    // (10-5)^(x+2)
    typedef EXPONENT<PAREN<SUBTRACT<LIT<10>, LIT<5> > >, PAREN<ADDITION<VAR, LIT<2> > > > FORMULA7;
-
-   printf("Result is %f\n", FORMULA3::eval(2));
+   printf("Result is %f\n", FORMULA7::eval(2));
 
    double x = EVAL<2, FORMULA7>::RET;
    printf("Result 2 is %f\n", x);
 
-   // Integral
+
+   // Question 2
+   // Integrals
    //
    typedef SUBTRACT<ADDITION<EXPONENT<VAR, LIT<2> >, PAREN<MULTIPLY<LIT<2>, VAR> > >, LIT<3> > POLY1;
    printf("Rectangle approximation Result is %f\n", INTEGRAL<100, RECTANGLE<POLY1> >::integrate(0, 10));
    printf("Trapezoid approxmination Result is %f\n", INTEGRAL<100, TRAPEZOID<POLY1> >::integrate(0,10));
 
-
-   // derivatives
+   // Question 3
+   // Derivatives
    //
-   typedef DIVIDE<PAREN<EXPONENT<VAR, PAREN<ADDITION<LIT<20>, LIT<3> > > > >, PAREN<SUBTRACT<VAR, LIT<3> > > > FORMULA8;
-   printf("Derivative result is: %f\n", FORMULA8::eval(5));
+   typedef DIVIDE<ADDITION<EXPONENT<VAR, LIT<20> >, LIT<3> >, SUBTRACT<VAR, LIT<3> > > FORMULA8;
+   printf("Derivative result when x=5 is: %f\n", FORMULA8::eval(5));
+   printf("Derivative result when x=10 is: %f\n", FORMULA8::eval(10));
    return 0;
 }
